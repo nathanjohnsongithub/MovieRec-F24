@@ -1,0 +1,35 @@
+name: Pylint
+
+on:
+  push:
+    branches:
+      - main  # Run on the main branch
+      - test-pylint-action  # Adjust for any specific test branches if needed
+  pull_request:
+    branches:
+      - main
+      - test-pylint-action
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install pylint
+        run: |
+          pip install pylint
+
+      - name: Run pylint
+        run: |
+          app db_models functions model
