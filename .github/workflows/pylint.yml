@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main  # Run on the main branch
-      - test-pylint-action  # Adjust for any specific test branches if needed
+      - linter  # Adjust for any specific test branches if needed
   pull_request:
     branches:
       - main
-      - test-pylint-action
+      - linter
 
 jobs:
   lint:
