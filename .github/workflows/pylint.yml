@@ -30,6 +30,6 @@ jobs:
         run: |
           pip install pylint
 
-      - name: Run pylint
+      - name: Run pylint on all Python files
         run: |
-          pylint app db_models functions model
+          find . -name "*.py" | xargs pylint
