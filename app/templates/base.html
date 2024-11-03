@@ -1,79 +1,154 @@
-<!-- https://www.figma.com/proto/xCQVJTNH7W89hGw1UcIeTF/AI-Club-Movie-Rec?node-id=1-2&t=MrUPHNe0JSrllMlu-1 -->
-
+{% with auth = current_user %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AI Club | MovieRec</title>
+  <title>Movie Streaming Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/mainPage.css') }}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-normalize@3.0.1/modern-normalize.min.css">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <script src="{{ url_for('static', filename='scripts/icons.js') }}"></script>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/mainPage.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "primary": 'var(--primary)',
+            "primary-muted": "var(--primary-muted)",
+            "secondary": "var(--secondary)",
+            "secondary-muted": "var(--secondary-muted)",
+            "destructive": "var(--destructive)"
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="space-mono-regular">
-  <header>
-    <h1>
-      <img alt="logo" src="{{url_for('static', filename='logo.png')}}"/>
-      <a href="/">AI Club</a>
-    </h1>
+<body class="grid-cols-12 mx-auto container">
+  {% if auth['is_authenticated'] %}
+    
+    <aside class="col-span-2 p-10 border-x border-gray-500">
+      <nav class="flex flex-col h-full">
+        <div class="grid grid-cols-[48px_1fr] gap-2 color-white font-bold">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="LAIC Logo" class="size-12 row-span-2">
+          <span class="col-span-1 text-[20px] leading-5">LAIC</span>
+          <span class="col-span-1 text-[20px] leading-5">MovieRec</span>
+        </div>
+    
+        <div class="flex-1 flex flex-col gap-12 mt-24 font-semibold [&_ul_span]:mb-2 [&_ul_span]:text-gray-400 [&>ul>a.active]:text-primary [&>ul>a]:relative [&>ul>a:hover]:underline">
+          <ul class="flex flex-col [&>a]:py-1.5 [&>a>li]:grid [&>a>li]:grid-cols-[24px_1fr] [&>a>li]:gap-3">
+            <span>Menu</span>
+            <a href="/">
+              <li>
+                <x-home-icon></x-home-icon> Home
+              </li>
+            </a>
+            <a href="/discover">
+              <li>
+                <x-compass-icon></x-compass-icon> Discover
+              </li>
+            </a>
+          </ul>
+    
+          <ul class="flex flex-col [&>a]:py-1.5 [&>a>li]:grid [&>a>li]:grid-cols-[24px_1fr] [&>a>li]:gap-3">
+            <span>Library</span>
+    
+            <a href="/recent">
+              <li>
+                <x-clock3-icon></x-clock3-icon> Recent
+              </li>
+            </a>
+            <a href="/top">
+              <li>
+                <x-star-icon></x-star-icon> Top Rated
+              </li>
+            </a>
+            <a href="/playlists">
+              <li>
+                <x-heart-icon></x-heart-icon> Playlists
+              </li>
+            </a>
+            <a href="/watchlist">
+              <li>
+                <x-plus-square-icon></x-plus-square-icon> Watchlist
+              </li>
+            </a>
+            <a href="/completed">
+              <li>
+                <x-plus-check-icon></x-plus-check-icon> Completed
+              </li>
+            </a>
+          </ul>
+    
+          <ul class="mt-auto flex flex-col [&>a]:py-1.5 [&>a>li]:grid [&>a>li]:grid-cols-[24px_1fr] [&>a>li]:gap-3">
+            <span>General</span>
+    
+            <a href="/profile">
+              <li>
+                <x-settings-icon></x-settings-icon> Settings
+              </li>
+            </a>
+    
+            <a href="/logout">
+              <li>
+                <x-log-out-icon></x-log-out-icon> Logout
+              </li>
+            </a>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+    <script>
+      const pathname = window.location.pathname;
+      document.querySelector(`[href="${pathname}"]`).classList.add('active');
+    </script>
+  {% endif %}
 
-    {% with auth = current_user %}
-    {% if auth.is_authenticated %}
-      <div class="profile-dropdown-container">
-        <img
-          src="{{ auth['profile_image_url'] }}"
-          alt='{% for i in range(("Joel Gutierrez").split(" ")|length)[:2] %}{{("Joel Gutierrez").split(" ")[i][0]}}{% endfor %}'
-          class="profile-picture"
-          style="font-size: 24px;"
-          onclick="document.querySelector('div.profile-dropdown').classList.toggle('show')"
-        />
+  {% block content %}
+  
+  {% endblock %}
 
-        <div class="profile-dropdown">
-          <h3 style="margin-top: 0px; font-weight: 400; font-size: 1.5rem; margin-bottom: 2rem;" class="mobile-only">Hi, {{ auth["username"] }}</h3>
-
-          <a href="/profile">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="5"/>
-              <path d="M20 21a8 8 0 0 0-16 0"/>
-            </svg>
-
-            Profile
-          </a>
-          <a href="/logout" style="margin-top: auto;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" x2="9" y1="12" y2="12"/>
-            </svg>
-
-            Logout
-          </a>
+  {% if auth['is_authenticated'] %}
+    <aside class="col-span-3 p-10 border-x border-gray-500">
+      <div class="flex justify-end items-center flex-col gap-2">
+        <div class="relative dropdown-trigger">
+          <label class="grid grid-cols-[auto_56px_32px] p-4 cursor-pointer text-end transition-color rounded-lg transition-colors hover:bg-white/10 has-[input:checked]:bg-white/10 peer group">
+            <span>{{ auth['username'] }}</span>
+  
+            <img
+            src="{{ auth['profile_image_url'] }}"
+            alt='{% for i in range(( auth["username"] ).split(" ")|length)[:2] %}{{( auth["username"] ).split(" ")[i][0]}}{% endfor %}'
+            class="size-12 flex-shrink-0 row-span-2 ml-2 rounded-lg bg-white/10 text-center leading-[48px] font-semibold"
+            >
+            <x-down-icon class="row-span-2 flex items-center ml-2 transition-transform group-has-[input:checked]:rotate-180"></x-down-icon>
+  
+            <span class="text-gray-400">{{ auth['email'] }}</span>
+            <input type="checkbox" class="hidden" autocomplete="off" name="dropdown"/>
+          </label>
+          <div class="absolute flex flex-col [&>a]:grid [&>a]:grid-cols-[20px_1fr] [&>a]:gap-2 top-[110px] right-0 p-4 rounded-lg border border-primary w-full -translate-y-10 opacity-0 pointer-events-none select-none transition-all peer-has-[input:checked]:translate-y-0 peer-has-[input:checked]:opacity-100 peer-has-[input:checked]:pointer-events-auto peer-has-[input:checked]:select-auto">
+            <a href="/profile" class="py-1 px-2 hover:underline">
+              <x-user-icon></x-user-icon> Profile
+            </a>
+            <a href="/logout" class="py-1 px-2 hover:underline">
+              <x-log-out-icon></x-log-out-icon>Logout
+            </a>
+          </div>
         </div>
       </div>
-    {% else %}
-      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 20a6 6 0 0 0-12 0"/>
-        <circle cx="12" cy="10" r="4"/>
-        <circle cx="12" cy="12" r="10"/>    
-      </svg>
-    {% endif %}
-    {% endwith %}
+    </aside>
+    <script>
+      const dropdownTrigger = document.querySelector('.dropdown-trigger');
+      const dropdownInput = document.querySelector('input[name="dropdown"]');
     
-  </header>
-  <main>  
-    {% block content %}
-    {% endblock %}
-  </main>
+      document.addEventListener('click', (e) => {
+        if (!dropdownTrigger.contains(e.target)) {
+          dropdownInput.checked = false;
+        }
+      });
+    </script>
+  {% endif %}
 </body>
-<script>
-  setTimeout(() => {
-    document.querySelector('div.profile-dropdown').style.transitionDuration = '0.2s'
-  }, '0.2s')
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.matches('.profile-picture')) {
-      document.querySelector('div.profile-dropdown').classList.remove('show')
-    }
-  })
-</script>
 </html>
+{% endwith %}

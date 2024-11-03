@@ -22,8 +22,8 @@ class User(UserMixin, db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
 
-    profile_image_id: Mapped[str] = mapped_column(nullable=True)
-    profile_image_url: Mapped[str] = mapped_column(nullable=True)
+    profile_image_id: Mapped[str] = mapped_column(nullable=False, server_default="")
+    profile_image_url: Mapped[str] = mapped_column(nullable=False, server_default="")
 
     reset_token: Mapped["PasswordResetToken"] = relationship("PasswordResetToken", back_populates="user")  # type: ignore
 
@@ -43,6 +43,9 @@ class User(UserMixin, db.Model):
 
     def get_by_email(email: str) -> "User":
         return User.query.filter_by(email=email).first()
+
+    def get_by_letterboxd(letterboxd: str) -> "User":
+        return User.query.filter_by(letterboxd_username=letterboxd).first()
 
     # to be implemented
     def upload_image(self, image: werkzeug.datastructures.file_storage.FileStorage) -> None:
@@ -74,3 +77,21 @@ class User(UserMixin, db.Model):
         self.profile_image_url = None
         self.profile_image_id = None
         db.session.commit()
+
+    def has_rated_movie(self, movie_id: str) -> bool:
+        for rating in self.ratings:
+            if rating.movie_id == movie_id:
+                return True
+        return False
+
+    def get_rating(self, movie_id: str) -> MovieRating:
+        for rating in self.ratings:
+            if rating.movie_id == movie_id:
+                return rating
+        return None
+
+    def get_rated_movies(self) -> list["MovieRating"]:
+        movies = []
+        for rating in self.ratings:
+            movies.append(rating.movie)
+        return movies
